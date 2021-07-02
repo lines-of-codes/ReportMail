@@ -1,0 +1,20 @@
+{
+  "name": "reportmail",
+  "version": "1.0.0",
+  "description": "A Way to Report the users to the Moderators.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "discord",
+    "bot"
+  ],
+  "author": "Satakun Utama",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "mongodb": "^3.6.9",
+    "mongoose": "^5.13.0"
+  }
+}
