@@ -4,7 +4,7 @@
   "description": "A Way to Report the users to the Moderators.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "keywords": [
     "discord",
