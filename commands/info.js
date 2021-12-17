@@ -11,7 +11,7 @@ module.exports = {
 			{name: "Version", value: "Version 0.1.0 Alpha"},
 			{name: "Developer", value: "Satakun Utama"},
 			{name: "Website", value: "Not available yet"}
-		).setFooter("Copyrighted (c) 2021 S Universal group, All rights reserved.");
+		);
 		interaction.reply({embeds: [InfoEmbed]});
 	}
 }

@@ -3,11 +3,21 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("close")
-		.setDescription("Close a ticket."),
-	async execute(message, args, Discord, Ticket, bot){
-		if(message.author.hasPermission('ADMINISTRATOR')){
+		.setDescription("Close a ticket.")
+		.addUserOption(option =>
+			option.setName('id')
+				.setDescription('The ID of the ticket to be closed')
+				.setRequired(true)
+		)
+		.addUserOption(option =>
+			option.setName('reason')
+				.setDescription('The reason to close this ticket.')
+				.setRequired(false)
+		),
+	async execute(interaction, args, Discord, Ticket, bot) {
+		if(interaction.author.hasPermission('ADMINISTRATOR')) {
 			if(!args[0]) {
-				message.reply("Please provide the ID of the Ticket you wanted to delete.");
+				interaction.reply("Please provide the ID of the Ticket you wanted to delete.");
 				return;
 			}
 
@@ -17,7 +27,7 @@ module.exports = {
 			}
 
 			if(!Number.isInteger(parseFloat(args[0], 10))){
-				message.reply("Ticket ID must be a Whole number!");
+				interaction.reply("Ticket ID must be a Whole number!");
 				return;
 			}
 
@@ -33,7 +43,7 @@ module.exports = {
 					.setTitle("Deletion failed").addFields(
 						{name: "Possible cause", value: "The ticket ID may not exist or already closed."}
 					);
-					message.channel.send(InfoEmbed);
+					interaction.reply(InfoEmbed);
 					return;
 				}
 				const InfoEmbed = new Discord.MessageEmbed().setColor("#FF5555")
@@ -42,11 +52,11 @@ module.exports = {
 					{name: "Reason", value: reason},
 					{name: "Ticket ID", value: targetID}
 				);
-				message.channel.send(InfoEmbed);
+				interaction.reply(InfoEmbed);
 				const user = message.guild.members.fetch(doc.owner).catch(() => null);
 
 				if (!user) {
-					message.channel.send(
+					interaction.reply(
 						new Discord.MessageEmbed().setColor("#FF5555").setTitle("Notification failed")
 						.addFields(
 							{name: "What", value: "Failed to fetch user with the ID in the Ticket."},
@@ -64,7 +74,7 @@ module.exports = {
 				});
 			});
 		} else {
-			message.channel.send(
+			interaction.reply(
 				new Discord.MessageEmbed().setColor("#FF5555")
 				.setTitle("Access denied").setFooter("Administration permission required.")
 			);
