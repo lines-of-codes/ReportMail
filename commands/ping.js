@@ -1,7 +1,10 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
-	name: "ping",
-	description: "Check the letency.",
-	execute(message, args, Discord, client){
+	data: new SlashCommandBuilder()
+		.setName("ping")
+		.setDescription("Check the letency."),
+	async execute(message, args, Discord, client){
 		message.channel.send("Calculating ping...").then(resultMessage => {
 			const ping = resultMessage.createdTimestamp - message.createdTimestamp;
 

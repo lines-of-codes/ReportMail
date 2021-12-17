@@ -1,10 +1,21 @@
-const fs = require("fs");
 const Discord = require("discord.js");
+const Intents = Discord.Intents;
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
 const mongoose = require("mongoose");
+const fs = require("fs");
 const Ticket = require("./models/ticket");
-const bot = new Discord.Client();
+
 const token = "ODYwMzY3MDMyMzYxMDI1NTM2.YN6NPQ.cddzLTGEi5BRcuI_fdqzUlp1q2w";
+const clientId = "860367032361025536";
 const prefix = "{}";
+const bot = new Discord.Client({
+	intents: [
+		Intents.FLAGS.GUILDS,
+		Intents.FLAGS.GUILD_MESSAGES
+	]
+});
+const rest = new REST({ version: '9' }).setToken(token);
 
 // MongoDB username password
 // reportmailbot mailbotworking
@@ -12,67 +23,115 @@ const connectURI = "mongodb+srv://reportmailbot:mailbotworking@reportmail0.sglpd
 mongoose.connect(connectURI, {useNewUrlParser: true, useUnifiedTopology: true})
 	.then((result) => console.log("Connected to MongoDB database."));
 
-bot.once("ready", () => {
-	console.log("ReportMail is now online!");
-})
-
 bot.commands = new Discord.Collection();
+const commandsData = [];
 const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'));
 
+console.log("Loading commands...");
 for(const file of commandFiles){
 	const command = require(`./commands/${file}`);
 
-	bot.commands.set(command.name, command);
+	bot.commands.set(command.data.name, command);
+	commandsData.push(command.data.toJSON());
 }
+console.log("Finished loading commands!");
+
+bot.once("ready", () => {
+	console.log("ReportMail is now online!");
+	bot.user.setActivity("Reporting people :floosh: | {}help");
+
+	(async () => {
+		console.log("Starting refreshing application slash commands...");
+
+		await rest.put(
+			Routes.applicationCommands(clientId),
+			{ body: commandsData }
+		)
+
+		console.log("Refreshing application slash commands finished!");
+	})();
+})
+
+bot.on("interactionCreate", async (interaction) => {
+	if (!interaction.isCommand()) return;
+
+	const command = client.commands.get(interaction.commandName);
+	if(!command) return;
+
+	try {
+		switch(interaction.commandName) {
+			case "help":
+			case "info":
+				await command.execute(interaction, [], Discord);
+				break;
+			case "close":
+				await command.execute(interaction, [], Discord, Ticket, bot);
+				break;
+			case "ping":
+				await command.execute(interaction, [], Discord, bot);
+				break;
+			default:
+				await command.execute(interaction, [], Discord, Ticket);
+				break;
+		}
+	} catch (error) {
+		console.error(error);
+		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+	}
+})
 
 var ticketID = 0;
 const cooldowns = new Map();
 
 function handleDM(message) {
-	if(!cooldowns.has("ticket")){
-		cooldowns.set("ticket", new Discord.Collection());
-	}
+	message.channel.send("DM handling is temporary closed, Sorry!");
+	// if(!cooldowns.has("ticket")){
+	// 	cooldowns.set("ticket", new Discord.Collection());
+	// }
 
-	const current_time = Date.now();
-	const time_stamps = cooldowns.get("ticket");
-	const cooldown_amount = 15000;
+	// const current_time = Date.now();
+	// const time_stamps = cooldowns.get("ticket");
+	// const cooldown_amount = 15000;
 
-	if(time_stamps.has(message.author.id)){
-		const expiration_time = time_stamps.get(message.author.id) + cooldown_amount;
+	// if(time_stamps.has(message.author.id)){
+	// 	const expiration_time = time_stamps.get(message.author.id) + cooldown_amount;
 
-		if(current_time < expiration_time){
-			const time_left = (expiration_time - current_time) / 1000;
-			return message.reply(`Hey! Please wait for ${time_left.toFixed(1)} second(s) before sending a Ticket again.`);
-		}
-	}
+	// 	if(current_time < expiration_time){
+	// 		const time_left = (expiration_time - current_time) / 1000;
+	// 		return message.reply(`Hey! Please wait for ${time_left.toFixed(1)} second(s) before sending a Ticket again.`);
+	// 	}
+	// }
 
-	time_stamps.set(message.author.id, current_time);
-	setTimeout(() => time_stamps.delete(message.author.id), cooldown_amount)
+	// time_stamps.set(message.author.id, current_time);
+	// setTimeout(() => time_stamps.delete(message.author.id), cooldown_amount);
 
-	let embed = new Discord.MessageEmbed().setColor("#AAFFAA")
-	.setTitle("Ticket created:").addFields(
-		{name: "Content", value: message.content}
-	).setFooter(`${message.author.username}#${message.author.discriminator}`);
-	let attachment;
-	message.attachments.forEach(element => {
-		attachment = element;
-	})
-	if(attachment != null) {
-		embed.setImage(attachment.url);
-	}
-	bot.channels.cache.get("860377230332395530").send(embed);
-	// bot.channels.cache.get(message.channel.id).send(new Discord.MessageEmbed().setColor("#AAFFAA").setTitle("Ticket sent."))
-	const ticket = new Ticket({
-		id: ticketID,
-		owner: message.channel.id
-	});
-	ticket.save().then(() => {
-		message.channel.send(new Discord.MessageEmbed().setColor("#AAFFAA").setTitle("Ticket sent."));
-		ticketID++;
-	});
+	// let embed = new Discord.MessageEmbed().setColor("#AAFFAA")
+	// .setTitle("Ticket created:").addFields(
+	// 	{name: "Content", value: message.content}
+	// ).setFooter(`${message.author.username}#${message.author.discriminator} - Ticket ID ${ticketID}`);
+	// let attachment;
+	// message.attachments.forEach(element => {
+	// 	attachment = element;
+	// })
+	// if(attachment != null) {
+	// 	embed.setImage(attachment.url);
+	// }
+	// bot.channels.cache.get("860117254988103690").send(embed);
+	// // bot.channels.cache.get(message.channel.id).send(new Discord.MessageEmbed().setColor("#AAFFAA").setTitle("Ticket sent."))
+	// const ticket = new Ticket({
+	// 	id: ticketID,
+	// 	owner: message.channel.id
+	// });
+	// ticket.save().then(() => {
+	// 	message.channel.send(
+	// 		new Discord.MessageEmbed().setColor("#AAFFAA")
+	// 		.setTitle("Ticket sent.").setFooter(`Ticket ID: ${ticketID}`)
+	// 	);
+	// 	ticketID++;
+	// });
 }
 
-bot.on("message", message => {
+bot.on("messageCreate", message => {
 	if(message.author.bot) return;
 	if(message.channel.type == "dm" && !message.content.startsWith(prefix))
 	{
@@ -87,17 +146,9 @@ bot.on("message", message => {
 
 		switch(command) {
 			case "help":
-				isValidCommand = true;
-				break;
 			case "ping":
-				isValidCommand = true;
-				break;
 			case "close":
-				isValidCommand = true;
-				break;
 			case "info":
-				isValidCommand = true;
-				break;
 			case "message":
 				isValidCommand = true;
 				break;
@@ -117,8 +168,10 @@ bot.on("message", message => {
 		try {
 			if (command == "ping"){
 				commandobj.execute(message, args, Discord, bot);
+			} else if (command == "close") {
+				commandobj.execute(message, args, Discord, Ticket, bot);
 			} else {
-				commandobj.execute(message, args, Discord);
+				commandobj.execute(message, args, Discord, Ticket);
 			}
 		} catch (err) {
 			message.reply("There was an Error trying to execute this command!");
