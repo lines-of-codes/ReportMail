@@ -4,7 +4,7 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("help")
 		.setDescription("See an information about commands!"),
-	async execute(interaction, args, Discord){
+		async execute(interaction, args, Discord){
 		function specificCommandEmbed(title, description) {
 			const Embed = new Discord.MessageEmbed().setColor("#AAFFAA")
 			.setTitle(title).setDescription(description)
