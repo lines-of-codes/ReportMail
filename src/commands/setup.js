@@ -10,7 +10,7 @@ module.exports = {
 		return;
 		await interaction.reply({ content: "Please wait while we're registering the server..." });
 		// fill the code for setting up nofifyChannel here
-		const nofifyChannel = null;
+		const notifyChannel = null;
 		const server = new Server({
 			guildId: interaction.guildId,
 			notifyChannel: notifyChannel,
