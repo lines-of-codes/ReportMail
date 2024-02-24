@@ -15,14 +15,14 @@
   "license": "MIT",
   "dependencies": {
     "@discordjs/builders": "^1.6.3",
-    "@discordjs/rest": "^1.7.1",
+    "@discordjs/rest": "^2.2.0",
     "discord-api-types": "^0.37.50",
-    "discord.js": "latest",
+    "discord.js": "^14.14.1",
     "dotenv": "^16.3.1",
-    "mongodb": "^5.7.0"
+    "mongodb": "^6.3.0"
   },
   "devDependencies": {
-    "@types/node": "^16.18.38",
+    "@types/node": "^20.11.20",
     "typescript": "^5.1.6"
   }
 }
