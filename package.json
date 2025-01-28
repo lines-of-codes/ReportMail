@@ -1,6 +1,6 @@
 {
   "name": "reportmail",
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@4.6.0+sha512.5383cc12567a95f1d668fbe762dfe0075c595b4bfff433be478dbbe24e05251a8e8c3eb992a986667c1d53b6c3a9c85b8398c35a960587fbd9fa3a0915406728",
   "version": "1.0.0",
   "description": "A Way to Report the users to the Moderators.",
   "main": "src/index.mjs",
@@ -14,15 +14,15 @@
   "author": "Satakun Utama",
   "license": "MIT",
   "dependencies": {
-    "@discordjs/builders": "^1.6.3",
-    "@discordjs/rest": "^2.2.0",
-    "discord-api-types": "^0.37.50",
-    "discord.js": "^14.14.1",
-    "dotenv": "^16.3.1",
-    "mongodb": "^6.3.0"
+    "@discordjs/builders": "^1.10.0",
+    "@discordjs/rest": "^2.4.2",
+    "discord-api-types": "^0.37.118",
+    "discord.js": "^14.17.3",
+    "dotenv": "^16.4.7",
+    "mongodb": "^6.12.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.20",
-    "typescript": "^5.1.6"
+    "@types/node": "^22.12.0",
+    "typescript": "^5.7.3"
   }
 }
